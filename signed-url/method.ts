@@ -4,13 +4,18 @@ import { log } from "./utils/logger";
 export async function requestMethods(request: any) {
     {
         const { method } = request;
+        const regex =
+            "^http://[a-zA-Z0-9.:-]+/[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+.(pdf|zip)$";
+
+        const matchRegex = new RegExp(regex).test(request.url);
         const url = new URL(request.url);
-        if (method === "GET" && url.pathname === "/get/signedUrl") {
-            const inData: any = url.searchParams;
-            const fileId: string = inData.get("fileId");
-            const response = await getSignedUrl({ fileId });
+
+        if (method === "GET" && matchRegex) {
+            const fileName: string = url.pathname.replace(/^\//, "");
+
+            const response = await getSignedUrl(fileName);
             log(
-                `Request response for the give file id: ${fileId} is ${JSON.stringify(
+                `Request response for the give file name: ${fileName} is ${JSON.stringify(
                     response
                 )}`
             );

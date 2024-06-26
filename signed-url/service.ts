@@ -1,5 +1,4 @@
 import { Storage, type GetSignedUrlConfig } from "@google-cloud/storage";
-import type { IData } from "./utils/interface";
 import { errorLog, log } from "./utils/logger";
 
 //environment variables
@@ -11,7 +10,7 @@ if (!projectId || !bucketName)
 
 const storage: Storage = new Storage({ projectId });
 
-export async function getSignedUrl(data: IData): Promise<{
+export async function getSignedUrl(fileName: string): Promise<{
     status: string;
     message: string;
     data?: {
@@ -20,14 +19,12 @@ export async function getSignedUrl(data: IData): Promise<{
     };
 }> {
     try {
-        log(
-            `Request received for get signed url for the file id ${data.fileId}`
-        );
+        log(`Request received for get signed url for the file id ${fileName}`);
 
-        if (!data?.fileId)
+        if (!fileName)
             throw new Error("input validation failed, missing fileId");
 
-        const destinationFileName = `${data.fileId}.zip`;
+        const destinationFileName = fileName;
         const expiryDate = Date.now() + 15 * 60 * 1000; // 15 minutes.
 
         const options = {
